@@ -25,3 +25,4 @@ sqlparse
 Werkzeug
 WTForms
 zipp
+langchain

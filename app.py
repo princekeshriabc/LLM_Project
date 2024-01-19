@@ -6,10 +6,25 @@ from wtforms.validators import DataRequired, Email, ValidationError
 import bcrypt
 from dotenv import load_dotenv
 load_dotenv()
+from langchain.llms import OpenAI
+from langchain.prompts import PromptTemplate
+from langchain.chains import LLMChain
 import os
 from flask_mysqldb import MySQL
 openai.api_key = os.getenv("OPENAI_API_KEY") 
 app = Flask(__name__)
+
+# Replace 'YOUR_OPENAI_API_KEY' with your actual OpenAI API key
+llm = OpenAI(openai_api_key=openai.api_key, temperature=0.6)
+
+# Define the prompt template with five input variables
+prompt_template = PromptTemplate(
+    input_variables=['word1', 'word2', 'word3', 'word4', 'word5'],
+    template="make a good story following this natural flow, adhering to common sense logic, and being captivating to the reader and use the this words {word1} {word2} {word3} {word4} {word5} and complete the story entirely"
+)
+
+# Assuming you have already defined the 'llm' variable
+chain = LLMChain(llm=llm, prompt=prompt_template)
 
 # MySQL Configuration
 app.config['MYSQL_HOST'] = 'localhost'
@@ -107,6 +122,34 @@ def logout():
     flash("You have been logged out successfully.")
     return redirect(url_for('login'))
 
+# @app.route('/Story', methods=['GET', 'POST'])
+# def Story():
+#     if request.method == 'POST':
+#         # Get input words from the user
+#         input_words = [request.form[f'word{i}'] for i in range(1, 6)]
+
+#         # Generate the story using user input words
+#         story = chain.run(word1=input_words[0], word2=input_words[1], word3=input_words[2], word4=input_words[3], word5=input_words[4])
+
+#         return render_template('Story.html', story=story)
+
+#     return render_template('Story.html')
+
+
+@app.route('/Story', methods=['GET', 'POST'])
+def Story():
+    if request.method == 'POST':
+        # Get input words from the user
+        input_words = [request.form[f'word{i}'] for i in range(1, 6)]
+
+        # Generate the story using user input words
+        story = chain.run(word1=input_words[0], word2=input_words[1], word3=input_words[2], word4=input_words[3], word5=input_words[4])
+
+        return render_template('Story.html', story=story)
+
+    return render_template('Story.html')
+
+
 @app.route('/generate-answer', methods=['POST','GET'])
 def generate_answer():
     try:
@@ -129,19 +172,19 @@ def generate_answer():
     
 @app.route('/generateimages/<prompt>')
 def generate(prompt):
-#   print("prompt:", prompt)
-#   response = openai.Image.create(prompt=prompt, n=1, size="256x256") 
-#   print(response)
-#   return jsonify(response)
-    try:
-        # Assuming you have the correct OpenAI library and API key set up
-        response = openai.Image.create(prompt=prompt, n=1, size="256x256")
-        images = [result['url'] for result in response['data']]
-        return jsonify({"success": True, "images": images})
-    except Exception as e:
-        error_message = str(e)
-        print("Error:", error_message)
-        return jsonify({"success": False, "error": error_message})
+  print("prompt:", prompt)
+  response = openai.Image.create(prompt=prompt, n=1, size="256x256") 
+  print(response)
+  return jsonify(response)
+    # try:
+    #     # Assuming you have the correct OpenAI library and API key set up
+    #     response = openai.Image.create(prompt=prompt, n=1, size="256x256")
+    #     images = [result['url'] for result in response['data']]
+    #     return jsonify({"success": True, "images": images})
+    # except Exception as e:
+    #     error_message = str(e)
+    #     print("Error:", error_message)
+    #     return jsonify({"success": False, "error": error_message})
 
 
 

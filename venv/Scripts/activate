@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="E:\Semeter_06\Porjects\flak\venv"
+VIRTUAL_ENV="E:\Semeter_06\Project_Copy\LLM_Project\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
