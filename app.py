@@ -20,7 +20,7 @@ llm = OpenAI(openai_api_key=openai.api_key, temperature=0.6)
 # Define the prompt template with five input variables
 prompt_template = PromptTemplate(
     input_variables=['word1', 'word2', 'word3', 'word4', 'word5'],
-    template="make a good story following this natural flow, adhering to common sense logic, and being captivating to the reader and use the this words {word1} {word2} {word3} {word4} {word5} and complete the story entirely"
+    template="you are professional story maker and you are expertized in completing story.Create a captivating and flawless story that seamlessly follows a natural flow and adheres to common sense logic. Your task is to incorporate the following words into the story with precision: {word1}, {word2}, {word3}, {word4}, {word5}. It's imperative that you complete the entire story perfectly, ensuring it captivates the reader's attention from start to finish."
 )
 
 # Assuming you have already defined the 'llm' variable
