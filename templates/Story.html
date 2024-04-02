@@ -54,6 +54,16 @@
         margin: 0;
         color: #333;
     }
+    .story-box {
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .story-image {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+        }
 </style>
 <!-- <nav class="navbar navbar-dark bg-dark">
     Navbar content 
@@ -127,6 +137,21 @@
         <p>{{ story }}</p>
         {% endif %}
     </div>
+</div>
+<div class="container">
+    {% for part in parts %}
+    <div class="story-box">
+        <h3>Phase {{ loop.index }}</h3>
+        <p>{{ part }}</p>
+
+    </div>
+    {% endfor %}
+    {% for  image_url in  generated_images %}
+    <div class="story-box">
+        
+        <img class="story-image" src="{{ image_url }}" alt="Image for Phase {{ loop.index }}">
+    </div>
+    {% endfor %}
 </div>
 <a href="{{url_for('login')}}">Go to login page</a>
 

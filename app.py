@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, session,request, flash, jsonify
+import requests
 import openai
 from flask_wtf import FlaskForm
 from wtforms import StringField,PasswordField,SubmitField
@@ -22,6 +23,10 @@ prompt_template = PromptTemplate(
     input_variables=['word1', 'word2', 'word3', 'word4', 'word5'],
     template="you are professional story maker and you are expertized in completing story.Create a captivating and flawless story that seamlessly follows a natural flow and adheres to common sense logic. Your task is to incorporate the following words into the story with precision: {word1}, {word2}, {word3}, {word4}, {word5}. It's imperative that you complete the entire story perfectly, ensuring it captivates the reader's attention from start to finish."
 )
+# prompt_template = PromptTemplate(
+#     input_variables=['word1', 'word2', 'word3', 'word4', 'word5'],
+#     template="you are professional story maker.make a story using these words are  {word1}, {word2}, {word3}, {word4}, {word5}. It's imperative that you complete the entire story perfectly, story should be completed."
+# )8
 
 # Assuming you have already defined the 'llm' variable
 chain = LLMChain(llm=llm, prompt=prompt_template)
@@ -141,15 +146,64 @@ def Story():
     if request.method == 'POST':
         # Get input words from the user
         input_words = [request.form[f'word{i}'] for i in range(1, 6)]
-
         # Generate the story using user input words
-        story = chain.run(word1=input_words[0], word2=input_words[1], word3=input_words[2], word4=input_words[3], word5=input_words[4])
-
-        return render_template('Story.html', story=story)
+        story_prompt = (
+            "Generate a shorts story using the following sentence: {word1}, {word2}, {word3}, {word4}, {word5}. The story should be complete, well-crafted, engaging, and evoke emotions in the reader. Ensure that the plot flows naturally and that the characters are compelling and relatable. Let the story unfold organically, incorporating the essence of each word seamlessly into the narrative. Replace {word1}, {word2}, {word3}, {word4}, and {word5} with the actual input sentence provided by the user. This prompt instructs the OpenAI text generation model to create a shorts story that incorporates the given words while maintaining coherence, creativity, and emotional impact. Adjust the language and tone of the prompt as needed to suit your preferences or specific requirements. And story last sentence should be completed." + " ".join(input_words) + "." + "story should be completed by last sentence ending with full stop."
+        )
+        story = chain.run(
+            word1=input_words[0],
+            word2=input_words[1],
+            word3=input_words[2],
+            word4=input_words[3],
+            word5=input_words[4],
+            prompt=story_prompt
+        )
+        print(story)
+       # Split the story into four meaningful parts
+        sentences = story.split(". ")
+        sentences_except_last = sentences[:-1]
+        print("Generated Story:")
+        print(sentences_except_last)
+        parts = []
+        for i in range(3):
+            parts.append(". ".join(sentences_except_last[i*2:i*2+2])+". ")
+        parts.append(". ".join(sentences_except_last[6:])+". ")
+        # Join all the sentences into one string
+        story = '.'.join(sentences_except_last)
+        story+='.'
+        print(story)
+        # Generate images for each part
+        generated_images = []
+        for part in parts:
+            response = requests.post('http://127.0.0.1:5000/generateimages/part')   # Send a POST request to generate images
+            if response.status_code == 200:
+                image_url = response.json().get('image_url', '')
+                if image_url:
+                    generated_images.append(image_url)
+        return render_template('Story.html', parts=parts,story=story,generated_images=generated_images)
 
     return render_template('Story.html')
+def generate_image(prompt):
+    # Call OpenAI's image generation API with the given prompt
+    response = openai.Image.create(prompt=prompt, n=1, size="256x256")
+    if 'url' in response:
+        # If the 'url' key exists, return the response
+        return response
+    else:
+        # If the 'url' key is not found, return None or raise an error
+        return None
+    
 
-
+# @app.route('/generate_response', methods=['GET', 'POST'])
+# def generate_response_route():
+#     if request.method == 'POST':
+#         user_input = request.form['user_input']
+#         response, inference_time = generate_response(user_input)
+#         return jsonify({'response': response, 'inference_time': inference_time})
+#     else:
+#         # Render the initial page without a generated response
+#         return render_template('response_template.html')
+    
 @app.route('/generate-answer', methods=['POST','GET'])
 def generate_answer():
     try:
