@@ -1,7 +1,6 @@
 {% extends 'app.html' %}
 {% block content %}
 <style>
-
     .container {
         max-width: 600px;
         width: 100%;
@@ -54,16 +53,18 @@
         margin: 0;
         color: #333;
     }
+
     .story-box {
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
-            padding: 20px;
-        }
-        .story-image {
-            width: 100%;
-            max-width: 200px;
-            height: auto;
-        }
+        border: 1px solid #ccc;
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+
+    .story-image {
+        width: 100%;
+        max-width: 200px;
+        height: auto;
+    }
 </style>
 <!-- <nav class="navbar navbar-dark bg-dark">
     Navbar content 
@@ -112,7 +113,7 @@
 <div class="container">
     <h1>Story Generator</h1>
 
-    <form method="post" action="{{ url_for('Story') }}">
+    <form id="storyForm" method="post" action="{{ url_for('Story')}}">
         <label for="word1">Word 1:</label>
         <input type="text" id="word1" name="word1" required>
 
@@ -120,13 +121,13 @@
         <input type="text" id="word2" name="word2" required>
 
         <label for="word3">Word 3:</label>
-        <input type="text" id="word3" name="word3" >
+        <input type="text" id="word3" name="word3">
 
         <label for="word4">Word 4:</label>
-        <input type="text" id="word4" name="word4" >
+        <input type="text" id="word4" name="word4">
 
         <label for="word5">Word 5:</label>
-        <input type="text" id="word5" name="word5" >
+        <input type="text" id="word5" name="word5">
 
         <button type="submit">Generate Story</button>
     </form>
@@ -138,21 +139,61 @@
         {% endif %}
     </div>
 </div>
-<div class="container">
+<!-- <div class="container">
     {% for part in parts %}
     <div class="story-box">
-        <h3>Phase {{ loop.index }}</h3>
         <p>{{ part }}</p>
-
     </div>
     {% endfor %}
-    {% for  image_url in  generated_images %}
-    <div class="story-box">
-        
-        <img class="story-image" src="{{ image_url }}" alt="Image for Phase {{ loop.index }}">
+    <div class="image-container">
+        {% for image_url in generated_images %}
+        <div class="story-box">
+            <img class="story-image" src="{{ image_url }}" alt="Generated Image">
+        </div>
+        {% endfor %}
+    </div>
+</div> -->
+<div class="image-container">
+    {% for image_url in generated_images %}
+    <div class="image-box">
+        <img src="{{ image_url }}" alt="Generated Image">
     </div>
     {% endfor %}
 </div>
+<!-- <div class="image-container">
+    <div class="image-box" id="imageContainer"></div>
+    <div class="image-box" id="imageContainer2"></div>
+    <div class="image-box" id="imageContainer3"></div>
+    <div class="image-box" id="imageContainer4"></div>
+</div> -->
+<!-- <script>
+    document.getElementById("storyForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch("/generatestory", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.json())  // Parse JSON response
+            .then(data => {
+                const imageUrl = data.image_url;  // Extract image URL from the response
+                const imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+                imgElement.alt = "Generated Image";
+
+                const imageContainers = document.querySelectorAll(".image-box");
+                imageContainers.forEach(container => {
+                    const clonedImg = imgElement.cloneNode(true);
+                    container.innerHTML = ""; // Clear previous content
+                    container.appendChild(clonedImg);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script> -->
 <a href="{{url_for('login')}}">Go to login page</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"

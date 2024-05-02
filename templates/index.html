@@ -64,6 +64,51 @@
     <p id="answer"></p>
 </div>
 
+<form id="storyForm" action="/generatestory" method="post">
+    <label for="word1">Word 1:</label>
+    <input type="text" id="word1" name="word1" required><br><br>
+
+    <label for="word2">Word 2:</label>
+    <input type="text" id="word2" name="word2" required><br><br>
+
+    <label for="word3">Word 3:</label>
+    <input type="text" id="word3" name="word3" required><br><br>
+
+    <label for="word4">Word 4:</label>
+    <input type="text" id="word4" name="word4" required><br><br>
+
+    <label for="word5">Word 5:</label>
+    <input type="text" id="word5" name="word5" required><br><br>
+
+    <button id="submitBtn" type="submit">Generate</button>
+</form>
+<div id="imageContainer"></div>
+
+<script>
+    document.getElementById("storyForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        fetch("/generatestory", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.json())  // Parse JSON response
+            .then(data => {
+                const imageUrl = data.image_url;  // Extract image URL from the response
+                const imgElement = document.createElement("img");
+                imgElement.src = imageUrl;
+                imgElement.alt = "Generated Image";
+
+                const imageContainer = document.getElementById("imageContainer");
+                imageContainer.innerHTML = "";
+                imageContainer.appendChild(imgElement);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
 
 <div class="container">
     <h1 class="my-4">Enter your Prompt</h1>
