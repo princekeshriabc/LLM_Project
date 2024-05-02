@@ -13,6 +13,7 @@ Hugging face models and datasets [link](https://huggingface.co/models)
 
 ## Project demo
 ![alt text](https://github.com/princekeshriabc/LLM_Project/blob/main/static/images/story%20demo.jpg))
+![alt text](https://github.com/princekeshriabc/LLM_Project/blob/main/static/images/story%20demo1.jpg))
 
 ## Installation
 
